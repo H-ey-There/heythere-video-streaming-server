@@ -1,0 +1,23 @@
+
+spring:
+  application:
+    name: heythere-video-streaming-server
+  h2:
+    console:
+      path: /h2
+      enabled: true
+
+server:
+  port: 8082
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
