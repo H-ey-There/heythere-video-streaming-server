@@ -1,5 +1,6 @@
-package com.heythere.community.compression.service;
+package com.heythere.video.video.service.impl;
 
+import com.heythere.video.video.service.FileCompressionService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,10 +25,9 @@ public class FileCompressionServiceImpl implements FileCompressionService {
 
         float imageQuality = 0.3f;
 
-        //Create the buffered image
+
         BufferedImage bufferedImage = ImageIO.read(inputStream);
 
-        //Get image writers
         Iterator<ImageWriter> imageWriters = ImageIO.getImageWritersByFormatName("jpg");
 
         if (!imageWriters.hasNext())
@@ -39,14 +39,11 @@ public class FileCompressionServiceImpl implements FileCompressionService {
 
         ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
 
-        //Set the compress quality metrics
         imageWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
         imageWriteParam.setCompressionQuality(imageQuality);
 
-        //Created image
         imageWriter.write(null, new IIOImage(bufferedImage, null, null), imageWriteParam);
 
-        // close all streams
         inputStream.close();
         outputStream.close();
         imageOutputStream.close();
