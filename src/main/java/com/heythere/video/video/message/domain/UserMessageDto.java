@@ -1,4 +1,4 @@
-package com.heythere.zuul.auth.message.domain;
+package com.heythere.video.video.message.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

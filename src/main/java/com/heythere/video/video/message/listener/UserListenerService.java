@@ -1,12 +1,12 @@
-package com.heythere.community.post.message.listener;
+package com.heythere.video.video.message.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heythere.community.post.exception.ResourceNotFoundException;
-import com.heythere.community.post.message.domain.UserEventDto;
-import com.heythere.community.post.message.domain.UserMessageDto;
-import com.heythere.community.post.model.User;
-import com.heythere.community.post.repository.UserRepository;
+import com.heythere.video.video.exception.ResourceNotFoundException;
+import com.heythere.video.video.message.domain.UserEventDto;
+import com.heythere.video.video.message.domain.UserMessageDto;
+import com.heythere.video.video.model.User;
+import com.heythere.video.video.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

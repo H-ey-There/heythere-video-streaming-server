@@ -1,3 +1,6 @@
+aws.yml
+database.yml
+
 .DS_Store
 HELP.md
 .gradle

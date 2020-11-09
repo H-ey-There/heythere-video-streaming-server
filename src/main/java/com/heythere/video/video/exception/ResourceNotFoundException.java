@@ -1,4 +1,4 @@
-package com.heythere.video.exception;
+package com.heythere.video.video.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

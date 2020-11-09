@@ -1,4 +1,3 @@
-
 spring:
   application:
     name: heythere-video-streaming-server
@@ -6,6 +5,31 @@ spring:
     console:
       path: /h2
       enabled: true
+  config:
+    location:
+      - classpath:aws.yml
+      - classpath:database.yml
+  servlet:
+    multipart:
+      max-request-size: 1000MB
+      max-file-size: 1000MB
+  kafka:
+    template:
+      default-topic: library-events
+    consumer:
+      bootstrap-servers: 3.34.46.47:9092,3.34.46.47:9093,3.34.46.47:9094
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: library-events-listener-group
+    producer:
+      bootstrap-servers:
+        - 3.34.46.47:9092,3.34.46.47:9093,3.34.46.47:9094
+      key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        acks: all
+        retries: 10
+        retry.backoff.ms: 1000
 
 server:
   port: 8082
@@ -18,6 +42,20 @@ management:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://3.35.49.66:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIAJF2FHSSU7QJJMHXA
+      secretKey: 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
+    s3:
+      bucket: heythere-file-store
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+

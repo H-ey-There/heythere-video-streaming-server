@@ -1,4 +1,4 @@
-package com.heythere.community.post.message.listener;
+package com.heythere.video.video.message.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;

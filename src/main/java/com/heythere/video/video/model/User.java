@@ -1,5 +1,8 @@
-package com.heythere.video.model;
+package com.heythere.video.video.model;
 
+import com.heythere.video.video.message.domain.UserEventDto;
+import com.heythere.video.video.message.domain.UserMessageDto;
+import com.heythere.video.video.shared.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,13 +45,13 @@ public class User extends BaseTimeEntity {
         this.commentStatus = commentStatus;
     }
 
-    public User updateUserEntityAndReturn(final CurrentUser currentUser) {
-        if (!currentUser.getEmail().equals(email))
-            this.email = currentUser.getEmail();
-        if(!currentUser.getName().equals(name))
-            this.name = currentUser.getName();
-        if (!currentUser.getImg().equals(img))
-            this.img = currentUser.getImg();
+    public User update(UserEventDto userEvent) {
+        final UserMessageDto message = userEvent.getUserMessageDto();
+
+        this.email = message.getEmail();
+        this.name = message.getName();
+        this.img = message.getImg();
+
         return this;
     }
 }

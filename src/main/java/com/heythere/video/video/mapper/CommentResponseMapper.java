@@ -1,7 +1,7 @@
-package com.heythere.video.mapper;
+package com.heythere.video.video.mapper;
 
-import com.heythere.video.model.Comment;
-import com.heythere.video.model.User;
+import com.heythere.video.video.model.Comment;
+import com.heythere.video.video.model.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -43,7 +43,7 @@ public class CommentResponseMapper {
         this.largeComments = largeComments;
     }
 
-    public static CommentResponseMapper getCommentMapper(final Comment comment) {
+    public static CommentResponseMapper of(final Comment comment) {
         final User user = comment.getUser();
 
         return CommentResponseMapper.builder()
@@ -56,7 +56,7 @@ public class CommentResponseMapper {
                 .name(user.getName())
                 .userImg(user.getImg())
                 .largeComments(comment.getLargeComments().stream()
-                        .map(LargeCommentResponseMapper::getLargeCommentMapper)
+                        .map(LargeCommentResponseMapper::of)
                         .sorted((c1,c2) -> c2.getCreatedAt().compareTo(c1.getCreatedAt()))
                         .collect(Collectors.toList()))
                 .build();

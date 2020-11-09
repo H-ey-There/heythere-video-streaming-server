@@ -1,4 +1,4 @@
-package com.heythere.video.utils;
+package com.heythere.video.video.utils;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,7 @@
-package com.heythere.video.mapper;
+package com.heythere.video.video.mapper;
 
-import com.heythere.video.model.LargeComment;
-import com.heythere.video.model.User;
+import com.heythere.video.video.model.LargeComment;
+import com.heythere.video.video.model.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -37,7 +37,7 @@ public class LargeCommentResponseMapper {
         this.userImg = userImg;
     }
 
-    public static LargeCommentResponseMapper getLargeCommentMapper(final LargeComment largeComment) {
+    public static LargeCommentResponseMapper of(final LargeComment largeComment) {
         final User user = largeComment.getUser();
 
         return LargeCommentResponseMapper.builder()

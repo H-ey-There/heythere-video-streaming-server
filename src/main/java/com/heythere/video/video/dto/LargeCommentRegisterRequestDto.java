@@ -1,4 +1,4 @@
-package com.heythere.video.dto;
+package com.heythere.video.video.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

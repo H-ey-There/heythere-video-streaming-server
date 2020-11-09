@@ -1,19 +1,21 @@
-package com.heythere.video.controller;
+package com.heythere.video.video.controller;
 
-import com.heythere.video.dto.CommentRegisterRequestDto;
-import com.heythere.video.dto.LargeCommentRegisterRequestDto;
-import com.heythere.video.mapper.VideoResponseMapper;
-import com.heythere.video.service.VideoService;
+import com.heythere.video.video.dto.CommentRegisterRequestDto;
+import com.heythere.video.video.dto.LargeCommentRegisterRequestDto;
+import com.heythere.video.video.mapper.VideoResponseMapper;
+import com.heythere.video.video.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
+@CrossOrigin("*")
 @RequiredArgsConstructor
 @RestController
 public class VideoController {
@@ -48,4 +50,15 @@ public class VideoController {
     public ResponseEntity<Long> registerLargeComment(@RequestBody final LargeCommentRegisterRequestDto payload) {
         return new ResponseEntity<>(videoService.registerLargeComment(payload), HttpStatus.CREATED);
     }
+
+    @GetMapping("order/topView")
+    public ResponseEntity<List<VideoResponseMapper>> findVideosTopViewCountLimitTen(Pageable pageable) {
+        return ResponseEntity.ok(videoService.findVideosTopViewCountLimitTen(pageable));
+    }
+
+    @GetMapping("order/goodCount")
+    public ResponseEntity<List<VideoResponseMapper>> findVideosTopGoodCountLimitTen(Pageable pageable) {
+        return ResponseEntity.ok(videoService.findVideosTopGoodCountLimitTen(pageable));
+    }
+
 }

@@ -1,5 +1,6 @@
-package com.heythere.video.model;
+package com.heythere.video.video.model;
 
+import com.heythere.video.video.shared.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Video extends BaseTimeEntity{
+public class Video extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "video_id")
@@ -20,6 +21,8 @@ public class Video extends BaseTimeEntity{
     private String title;
     private String description;
     private String thumbnailUrl;
+
+    @Column(columnDefinition = "TEXT")
     private String videoUrl;
 
     @ManyToOne
@@ -30,8 +33,8 @@ public class Video extends BaseTimeEntity{
     private List<Comment> comments = new ArrayList<>();
 
     private Integer viewCount;
-    private Integer likeCount;
-    private Integer hateCount;
+    private Integer goodCount;
+    private Integer badCount;
 
     @OneToMany(mappedBy = "video")
     private List<VideoAndUser> status = new ArrayList<>();
@@ -40,8 +43,8 @@ public class Video extends BaseTimeEntity{
     @PrePersist
     public void perPersist() {
         viewCount = viewCount == null ? 0 : viewCount;
-        likeCount = likeCount == null ? 0 : likeCount;
-        hateCount = hateCount == null ? 0 : hateCount;
+        goodCount = goodCount == null ? 0 : goodCount;
+        badCount = badCount == null ? 0 : badCount;
     }
 
     @Builder
@@ -63,5 +66,10 @@ public class Video extends BaseTimeEntity{
         this.user = user;
         this.comments = comments;
         this.status = status;
+    }
+
+    public Video updateViewCount() {
+        this.viewCount++;
+        return this;
     }
 }
