@@ -60,5 +60,4 @@ public class VideoController {
     public ResponseEntity<List<VideoResponseMapper>> findVideosTopGoodCountLimitTen(Pageable pageable) {
         return ResponseEntity.ok(videoService.findVideosTopGoodCountLimitTen(pageable));
     }
-
 }

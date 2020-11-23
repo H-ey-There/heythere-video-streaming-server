@@ -14,7 +14,6 @@ public class UserListener {
     private final UserListenerService userListenerService;
 
     private static final String USER_UPDATE_TOPIC = "user-information-updated";
-    private static final String USER_MODIFY_TOPIC = "user-information-modified";
     private static final String USER_DELETED = "user-deleted";
 
     @KafkaListener(topics = {USER_UPDATE_TOPIC})
@@ -27,10 +26,5 @@ public class UserListener {
     public void onUserDelete(final ConsumerRecord<Integer,String> consumerRecord) throws JsonProcessingException {
         log.info("ConsumerRecord : {} ", consumerRecord );
         userListenerService.processDeleteUserEvent(consumerRecord);
-    }
-
-    @KafkaListener(topics = {USER_MODIFY_TOPIC})
-    public void onUserModify(final ConsumerRecord<Integer,String> consumerRecord) throws JsonProcessingException {
-        log.info("ConsumerRecord : {} ", consumerRecord );
     }
 }
