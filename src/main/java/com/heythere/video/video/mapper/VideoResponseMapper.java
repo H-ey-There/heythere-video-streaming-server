@@ -2,13 +2,11 @@ package com.heythere.video.video.mapper;
 
 import com.heythere.video.video.model.User;
 import com.heythere.video.video.model.Video;
-import com.heythere.video.video.model.VideoAndUser;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -21,7 +19,8 @@ public class VideoResponseMapper {
     private final String thumbnailUrl;
     private final String videoUrl;
     private final int viewCount;
-
+    private final int good;
+    private final int bad;
     private final boolean goodStatus;
     private final boolean badStatus;
 
@@ -41,6 +40,8 @@ public class VideoResponseMapper {
                                String thumbnailUrl,
                                String videoUrl,
                                int viewCount,
+                               int good,
+                               int bad,
                                boolean goodStatus,
                                boolean badStatus,
                                Long userId,
@@ -56,6 +57,8 @@ public class VideoResponseMapper {
         this.thumbnailUrl = thumbnailUrl;
         this.videoUrl = videoUrl;
         this.viewCount = viewCount;
+        this.good = good;
+        this.bad = bad;
         this.goodStatus = goodStatus;
         this.badStatus = badStatus;
         this.userId = userId;
@@ -65,12 +68,10 @@ public class VideoResponseMapper {
         this.comments = comments;
     }
 
-    public static VideoResponseMapper of(final Video video) {
+    public static VideoResponseMapper of(final Video video,
+                                         final Boolean goodStatus,
+                                         final Boolean badStatus) {
         final User user = video.getUser();
-
-        final Optional<VideoAndUser> status =  user.getVideoStatus().stream()
-                .filter(s -> s.getVideo().equals(video))
-                .findFirst();
 
         return VideoResponseMapper.builder()
                 .id(video.getId())
@@ -81,8 +82,10 @@ public class VideoResponseMapper {
                 .thumbnailUrl(video.getThumbnailUrl())
                 .videoUrl(video.getVideoUrl())
                 .viewCount(video.getViewCount())
-                .goodStatus(status == null ? false : status.get().getGoodStatus())
-                .badStatus(status == null ? false : status.get().getBadStatus())
+                .good(video.getGoodCount())
+                .bad(video.getBadCount())
+                .goodStatus(goodStatus)
+                .badStatus(badStatus)
                 .userId(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
@@ -92,6 +95,25 @@ public class VideoResponseMapper {
                         .sorted((c1,c2) -> c2.getCreatedAt().compareTo(c1.getCreatedAt()))
                         .collect(Collectors.toList())
                 )
+                .build();
+    }
+
+    public static VideoResponseMapper of(final Video video) {
+        final User user = video.getUser();
+
+        return VideoResponseMapper.builder()
+                .id(video.getId())
+                .title(video.getTitle())
+                .description(video.getDescription())
+                .createdAt(video.getCreatedAt())
+                .modifiedAt(video.getModifiedAt())
+                .thumbnailUrl(video.getThumbnailUrl())
+                .videoUrl(video.getVideoUrl())
+                .viewCount(video.getViewCount())
+                .userId(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .userImg(user.getImg())
                 .build();
     }
 }

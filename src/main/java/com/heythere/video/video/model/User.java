@@ -15,8 +15,9 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity
-public class User extends BaseTimeEntity {
+public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
     @Unique
@@ -24,24 +25,23 @@ public class User extends BaseTimeEntity {
     private String name;
     private String img;
 
-    @OneToMany(mappedBy = "user")
-    private List<VideoAndUser> videoStatus = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<CommentAndUser> commentStatus = new ArrayList<>();
+
     @Builder
-    public User(Long id,
-                String email,
-                String name,
-                String img,
-                List<VideoAndUser> videoStatus,
-                List<CommentAndUser> commentStatus) {
+    public User(Long id, @Unique String email, String name, String img, List<CommentAndUser> commentStatus) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.img = img;
-        this.videoStatus = videoStatus;
         this.commentStatus = commentStatus;
+    }
+
+    public User(@Unique String email, String name, String img) {
+        this.email = email;
+        this.name = name;
+        this.img = img;
     }
 
     public User update(UserEventDto userEvent) {

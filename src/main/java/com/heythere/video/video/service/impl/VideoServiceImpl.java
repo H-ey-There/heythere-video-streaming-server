@@ -3,17 +3,15 @@ package com.heythere.video.video.service.impl;
 import com.heythere.video.video.dto.CommentRegisterRequestDto;
 import com.heythere.video.video.dto.LargeCommentRegisterRequestDto;
 import com.heythere.video.video.exception.ResourceNotFoundException;
+import com.heythere.video.video.mapper.CommentResponseMapper;
+import com.heythere.video.video.mapper.LargeCommentResponseMapper;
+import com.heythere.video.video.mapper.VideoGoodBadStatusMapper;
 import com.heythere.video.video.mapper.VideoResponseMapper;
-import com.heythere.video.video.model.Comment;
-import com.heythere.video.video.model.LargeComment;
-import com.heythere.video.video.model.User;
-import com.heythere.video.video.model.Video;
-import com.heythere.video.video.repository.CommentRepository;
-import com.heythere.video.video.repository.LargeCommentRepository;
-import com.heythere.video.video.repository.UserRepository;
-import com.heythere.video.video.repository.VideoRepository;
+import com.heythere.video.video.model.*;
+import com.heythere.video.video.repository.*;
 import com.heythere.video.video.service.VideoService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class VideoServiceImpl implements VideoService {
@@ -31,6 +30,7 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository videoRepository;
     private final CommentRepository commentRepository;
     private final LargeCommentRepository largeCommentRepository;
+    private final VideoAndUserRepository videoAndUserRepository;
     private final AmazonS3StorageService amazonS3StorageService;
     private final RestTemplate restTemplate;
 
@@ -45,12 +45,26 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional
-    public VideoResponseMapper findVideoById(Long videoId) {
-        return VideoResponseMapper.of(
-                videoRepository.findById(videoId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId))
-                .updateViewCount()
-        );
+    public VideoResponseMapper findVideoById(Long videoId, Long userId) {
+
+        final User user = getUser(userId);
+        final Video video = getVideo(videoId)
+                .updateViewCount();
+        boolean goodStatus = false;
+        boolean badStatus = false;
+        if (!videoAndUserRepository.existsByUserAndVideo(user, video)) {
+            videoAndUserRepository.save(VideoAndUser.builder()
+                    .user(user)
+                    .video(video)
+                    .build());
+        } else {
+            final VideoAndUser vu = getVu(user, video);
+
+            goodStatus = vu.getGoodStatus();
+            badStatus = vu.getBadStatus();
+        }
+
+        return VideoResponseMapper.of(video, goodStatus, badStatus);
     }
 
     @Override
@@ -59,7 +73,7 @@ public class VideoServiceImpl implements VideoService {
                             final String title,
                             final String description,
                             final MultipartFile thumbnail,
-                            final  MultipartFile video) throws IOException {
+                            final MultipartFile video) throws IOException {
         final User user = getUser(requestUserId);
 
         return videoRepository.save(Video.builder()
@@ -90,6 +104,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Long registerLargeComment(final LargeCommentRegisterRequestDto payload) {
+
         final Comment comment = commentRepository.findById(payload.getCommentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", payload.getCommentId()));
 
@@ -99,7 +114,7 @@ public class VideoServiceImpl implements VideoService {
                 .user(getUser(payload.getRequestUserId()))
                 .build());
 
-        return largeComment.addLargeCommentToComment(comment).getId();
+        return largeComment.getId();
     }
 
     @Override
@@ -120,8 +135,87 @@ public class VideoServiceImpl implements VideoService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public List<CommentResponseMapper> findAllCommentByVideoId(Long videoId) {
+        final Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId));
+
+        return video.getComments()
+                .stream()
+                .map(CommentResponseMapper::of)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<LargeCommentResponseMapper> findAllLargeCommentByCommentId(Long commentId) {
+        final Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentId));
+
+        return comment.getLargeComments()
+                .stream()
+                .map(LargeCommentResponseMapper::of)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public VideoGoodBadStatusMapper pressGoodButton(Long userId, Long videoId) {
+        final User user = getUser(userId);
+        final Video video = getVideo(videoId);
+        final VideoAndUser vu = getVu(user, video);
+
+        if (!vu.getGoodStatus()) {
+            video.increaseGood();
+        } else {
+            video.decreaseGood();
+        }
+        vu.updateGoodStatus();
+
+        return VideoGoodBadStatusMapper.builder()
+                .good(video.getGoodCount())
+                .bad(video.getBadCount())
+                .goodStatus(vu.getGoodStatus())
+                .badStatus(vu.getBadStatus())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public VideoGoodBadStatusMapper pressBadButton(Long userId, Long videoId) {
+        final User user = getUser(userId);
+        final Video video = getVideo(videoId);
+        final VideoAndUser vu = getVu(user, video);
+
+        if (!vu.getBadStatus()) {
+            video.increaseBad();
+        } else {
+            video.decreaseBad();
+        }
+        vu.updateBadStatus();
+
+        return VideoGoodBadStatusMapper.builder()
+                .good(video.getGoodCount())
+                .bad(video.getBadCount())
+                .goodStatus(vu.getGoodStatus())
+                .badStatus(vu.getBadStatus())
+                .build();
+    }
+
+    private VideoAndUser getVu(final User user, final Video video) {
+        return videoAndUserRepository.findByUserAndVideo(user, video)
+                .orElseThrow(() -> new ResourceNotFoundException("VideoAndUser"));
+    }
+
+
     private User getUser(final Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User","id",id));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+    }
+
+    private Video getVideo(final Long id) {
+        return videoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Video", "id", id));
     }
 }

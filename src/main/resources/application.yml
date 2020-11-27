@@ -1,6 +1,8 @@
 spring:
   application:
     name: heythere-video-streaming-server
+  datasource:
+
   h2:
     console:
       path: /h2
@@ -20,8 +22,7 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: heythere
     producer:
-      bootstrap-servers:
-        - localhost:9092,localhost:9093,localhost:9094
+      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:

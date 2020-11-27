@@ -1,17 +1,19 @@
 package com.heythere.video.video.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentRegisterRequestDto {
     @NotNull
-    private final Long requestUserId;
+    private Long requestUserId;
     @NotNull
-    private final Long videoId;
+    private Long videoId;
     @NotNull
-    private final String comment;
+    private String comment;
 }

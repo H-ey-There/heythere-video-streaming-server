@@ -2,6 +2,10 @@ package com.heythere.video.video.controller;
 
 import com.heythere.video.video.dto.CommentRegisterRequestDto;
 import com.heythere.video.video.dto.LargeCommentRegisterRequestDto;
+import com.heythere.video.video.dto.RequestUserIdDto;
+import com.heythere.video.video.mapper.CommentResponseMapper;
+import com.heythere.video.video.mapper.LargeCommentResponseMapper;
+import com.heythere.video.video.mapper.VideoGoodBadStatusMapper;
 import com.heythere.video.video.mapper.VideoResponseMapper;
 import com.heythere.video.video.service.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +32,9 @@ public class VideoController {
 
 
     @GetMapping("video/{videoId}")
-    public ResponseEntity<VideoResponseMapper> findVideoById(@PathVariable("videoId") final Long videoId) {
-        return ResponseEntity.ok(videoService.findVideoById(videoId));
+    public ResponseEntity<VideoResponseMapper> findVideoById(@PathVariable("videoId") final Long videoId,
+                                                             @RequestBody final RequestUserIdDto payload) {
+        return ResponseEntity.ok(videoService.findVideoById(videoId, payload.getRequestUserId()));
     }
 
     @PostMapping("registration")
@@ -39,6 +44,16 @@ public class VideoController {
                                             @RequestParam("thumbnail") final MultipartFile thumbnail,
                                             @RequestParam("video") final MultipartFile video) throws IOException {
         return new ResponseEntity<>(videoService.uploadVideo(requestUserId, title, description, thumbnail, video), HttpStatus.CREATED);
+    }
+
+    @GetMapping("video/{id}/comments")
+    public List<CommentResponseMapper> findAllCommentByVideoId(@PathVariable("id") final Long videoId){
+        return videoService.findAllCommentByVideoId(videoId);
+    }
+
+    @GetMapping("comment/{id}/largeComment")
+    public List<LargeCommentResponseMapper> findAllLargeCommentByCommentId(@PathVariable("id") final Long commentId){
+        return videoService.findAllLargeCommentByCommentId(commentId);
     }
 
     @PostMapping("registration/comment")
@@ -59,5 +74,17 @@ public class VideoController {
     @GetMapping("order/goodCount")
     public ResponseEntity<List<VideoResponseMapper>> findVideosTopGoodCountLimitTen(Pageable pageable) {
         return ResponseEntity.ok(videoService.findVideosTopGoodCountLimitTen(pageable));
+    }
+
+    @GetMapping("video/{videoId}/good/user/{userId}")
+    public VideoGoodBadStatusMapper pressGood(@PathVariable("userId") final Long userId,
+                                              @PathVariable("videoId") final Long videoId) {
+        return videoService.pressGoodButton(userId, videoId);
+    }
+
+    @GetMapping("video/{videoId}/bad/user/{userId}")
+    public VideoGoodBadStatusMapper pressBad(@PathVariable("userId") final Long userId,
+                                              @PathVariable("videoId") final Long videoId) {
+        return videoService.pressBadButton(userId, videoId);
     }
 }

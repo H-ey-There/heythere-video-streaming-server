@@ -11,7 +11,7 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     @Query("select v from Video v order by v.viewCount desc")
     List<Video> findVideosTopViewCountLimitTen(final Pageable pageable);
 
-    @Query("select v from Video v order by v.goodCount desc")
+    @Query("select v from Video v")
     List<Video> findVideosTopGoodCountLimitTen(final Pageable pageable);
 
 }

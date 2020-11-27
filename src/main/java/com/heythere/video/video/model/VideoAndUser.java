@@ -24,11 +24,11 @@ public class VideoAndUser extends BaseTimeEntity {
     @Column(name = "video_user_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "video_id")
     private Video video;
 
@@ -52,9 +52,13 @@ public class VideoAndUser extends BaseTimeEntity {
         this.badStatus = badStatus;
     }
 
-    public VideoAndUser addStatusToUserAndPost(final User user, final Video video) {
-        user.getVideoStatus().add(this);
-        video.getStatus().add(this);
+    public VideoAndUser updateGoodStatus() {
+        this.goodStatus = !goodStatus;
+        return this;
+    }
+
+    public VideoAndUser updateBadStatus() {
+        this.badStatus = !badStatus;
         return this;
     }
 }

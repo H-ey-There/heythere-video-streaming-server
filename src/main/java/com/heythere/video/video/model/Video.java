@@ -36,10 +36,6 @@ public class Video extends BaseTimeEntity {
     private Integer goodCount;
     private Integer badCount;
 
-    @OneToMany(mappedBy = "video")
-    private List<VideoAndUser> status = new ArrayList<>();
-
-
     @PrePersist
     public void perPersist() {
         viewCount = viewCount == null ? 0 : viewCount;
@@ -53,23 +49,41 @@ public class Video extends BaseTimeEntity {
                  String description,
                  String thumbnailUrl,
                  String videoUrl,
-                 int viewCount,
                  User user,
                  List<Comment> comments,
-                 List<VideoAndUser> status) {
+                 Integer viewCount,
+                 Integer goodCount,
+                 Integer badCount) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
         this.videoUrl = videoUrl;
-        this.viewCount = viewCount;
         this.user = user;
         this.comments = comments;
-        this.status = status;
+        this.viewCount = viewCount;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
     }
 
     public Video updateViewCount() {
         this.viewCount++;
         return this;
+    }
+
+    public void increaseGood() {
+        this.goodCount++;
+    }
+
+    public void decreaseGood() {
+        this.goodCount--;
+    }
+
+    public void increaseBad() {
+        this.badCount++;
+    }
+
+    public void decreaseBad() {
+        this.badCount--;
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class UserListener {
     private final UserListenerService userListenerService;
 
-    private static final String USER_UPDATE_TOPIC = "user-information-updated";
+    private static final String USER_UPDATE_TOPIC = "user-generate-video-server";
     private static final String USER_DELETED = "user-deleted";
 
     @KafkaListener(topics = {USER_UPDATE_TOPIC})
